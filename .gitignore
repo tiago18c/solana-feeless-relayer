@@ -36,5 +36,6 @@ yarn-error.log*
 next-env.d.ts
 tmp
 
-# vscode peacock
+# vscode
+.vscode
 .vscode/settings.json
