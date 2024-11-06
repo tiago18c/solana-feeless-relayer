@@ -1,0 +1,58 @@
+{
+  "address": "ComputeBudget111111111111111111111111111111",
+  "metadata": {
+    "name": "sponsor_relayer",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "initialize",
+      "discriminator": [
+        175,
+        175,
+        109,
+        31,
+        13,
+        152,
+        155,
+        237
+      ],
+      "accounts": [],
+      "args": []
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "InvalidTipAccount",
+      "msg": "Invalid tip account"
+    },
+    {
+      "code": 6001,
+      "name": "InvalidMint",
+      "msg": "Invalid mint"
+    },
+    {
+      "code": 6002,
+      "name": "InvalidCloseAuthority",
+      "msg": "Invalid close authority"
+    },
+    {
+      "code": 6003,
+      "name": "CloseAuthorityNotSet",
+      "msg": "Close authority not set"
+    },
+    {
+      "code": 6004,
+      "name": "InvalidProgram",
+      "msg": "Invalid program"
+    },
+    {
+      "code": 6005,
+      "name": "MaxPriorityFeeExceeded",
+      "msg": "Max priority fee exceeded"
+    }
+  ]
+}
