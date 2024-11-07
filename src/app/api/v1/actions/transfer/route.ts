@@ -2,8 +2,8 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { ActionGetResponse, ActionPostRequest, ActionPostResponse, createActionHeaders } from '@solana/actions';
-import { supportedMints } from '@/app/config/mint';
-import { createSplTransfer } from '@/logic/transactionLogic';
+import { getMintInfo } from '@/app/config/mint';
+import { createSplTransfer } from '@/logic/transactionEngine';
 import { validatePublicKeyString } from '@/utils/publicKey';
 
 // create the standard headers for this route (including CORS)
@@ -29,7 +29,12 @@ const validateCreateSplTransferRequest = async (req: NextRequest): Promise<{ err
     return { error: 'Invalid amount' };
   }
   const mintSymbol = requestUrl.searchParams.get('mintSymbol');
-  if (!mintSymbol || typeof mintSymbol !== 'string' || !(mintSymbol in supportedMints)) {
+  try {
+    if (!mintSymbol) {
+      return { error: 'Mint symbol is required' };
+    }
+    getMintInfo(mintSymbol);
+  } catch (error) {
     return { error: 'Unsupported token' };
   }
 
@@ -89,11 +94,14 @@ export async function GET(req: NextRequest, res: NextResponse<ActionGetResponse 
           parameters: [
             {
               name: "amount", // parameter name in the `href` above
+              type: "number",
               label: "Enter the amount of USDT to send", // placeholder of the text input
               required: true,
+              min: 1,
             },
             {
               name: "destination", // parameter name in the `href` above
+              type: "text",
               label: "Enter the destination Solana wallet address", // placeholder of the text input
               required: true,
             },

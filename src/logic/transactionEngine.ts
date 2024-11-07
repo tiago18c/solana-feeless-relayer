@@ -1,15 +1,15 @@
 import { v4 as uuidv4 } from 'uuid';
 import { getSplTransferById, createSplTransfer as createSplTransferInDb } from '@/services/db/queries/splTransfer';
 import { SplTransfer, transactionStatuses } from '@/app/types/splTransfer';
-import { supportedMints } from '@/app/config/mint';
+import { getMintInfo } from '@/app/config/mint';
 import { EmbeddedWallet, ix_TransferSPL } from '@/utils/EmbeddedWallet';
 export async function getSplTransfer(id: string): Promise<SplTransfer | null> {
   return await getSplTransferById(id);
 }
 
 export async function createSplTransfer(sender: string, destination: string, amount: string, mintSymbol: string): Promise<SplTransfer> {
-  const mintAddress = supportedMints[mintSymbol as keyof typeof supportedMints];
-  const relayWallet = await EmbeddedWallet.get();
+  const mint = getMintInfo(mintSymbol);
+  const relayWallet = EmbeddedWallet.get();
 
   const RELAY_FEE = '500000'; // 0.50 USDC/USDT (6 decimal places)
 
@@ -17,16 +17,16 @@ export async function createSplTransfer(sender: string, destination: string, amo
     sender,
     await relayWallet.keymanager.getAddress(),
     RELAY_FEE,
-    mintAddress,
-    mintAddress
+    mint.address,
+    mint.address
   );
 
   const ix_transfer = await ix_TransferSPL(
     sender,
     destination,
     amount,
-    mintAddress,
-    mintAddress
+    mint.address,
+    mint.address
   );
 
   const splTransferTxn = await relayWallet.BuildTransaction(
@@ -41,7 +41,7 @@ export async function createSplTransfer(sender: string, destination: string, amo
     sender,
     destination,
     amount,
-    mint: mintAddress,
+    mint: mint.address,
     mintSymbol,
     unsignedTransactionBytes: Buffer.from(splTransferTxn.serialize()),
     currentStatus: transactionStatuses.INIT,
