@@ -12,7 +12,7 @@ pub struct BlockRelayer<'info> {
     pub sponsorship: Account<'info, Sponsorship>,
 }
 
-pub fn block_relayer(ctx: Context<BlockRelayer>) -> Result<()> {
+pub fn handler(ctx: Context<BlockRelayer>) -> Result<()> {
     let relayer = &mut ctx.accounts.relayer;
     relayer.authorized = false;
     Ok(())

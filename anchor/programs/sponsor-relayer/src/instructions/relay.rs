@@ -1,5 +1,6 @@
-use anchor_lang::prelude::*;
+use anchor_lang::{prelude::*, solana_program::rent};
 use anchor_lang::solana_program::sysvar::instructions as tx_instructions;
+use anchor_spl::associated_token;
 
 use crate::{Relayer, SponsorRelayerError, Sponsorship};
 
@@ -7,6 +8,9 @@ const TRANSFER_CHECKED_DISCRIMINATOR: u8 = 12;
 const INITIALIZE_ACCOUNT_2_DISCRIMINATOR: u8 = 16;
 const INITIALIZE_ACCOUNT_3_DISCRIMINATOR: u8 = 18;
 const SET_AUTHORITY_DISCRIMINATOR: u8 = 6;
+
+const ATA_CREATE_DISCRIMINATOR: u8 = 0;
+const ATA_CREATE_IDEMPOTENT_DISCRIMINATOR: u8 = 1;
 
 const CLOSE_AUTHORITY_TYPE: u8 = 3;
 
@@ -31,12 +35,13 @@ pub struct Relay<'info> {
     pub instructions: UncheckedAccount<'info>,
 }
 
-pub fn relay(ctx: Context<Relay>) -> Result<()> {
+pub fn handler(ctx: Context<Relay>) -> Result<()> {
     let mut index = 0;
     let mut signers = vec![];
     let mut compute_limit = 0;
     let mut compute_price = 0;
     let mut init_accounts = vec![];
+    let mut rent : u64 = 0;
 
     while let Ok(instr) = tx_instructions::load_instruction_at_checked(index, &ctx.accounts.instructions) {
 
@@ -66,10 +71,18 @@ pub fn relay(ctx: Context<Relay>) -> Result<()> {
             } else if instr.data[0] == SET_AUTHORITY_DISCRIMINATOR && instr.data[1] == CLOSE_AUTHORITY_TYPE {
                 require!(instr.data[3..] == ctx.accounts.relayer_wallet.key().to_bytes(), SponsorRelayerError::InvalidCloseAuthority);
                 if let Some(idx) = init_accounts.iter().position(|&x| x == instr.accounts[0].pubkey) {
-                    init_accounts.remove(idx);
+                    let acc = init_accounts.remove(idx);
+
+                    rent += ctx.remaining_accounts.iter().find(|x| x.key == &acc).unwrap().lamports();
                 } else {
                     return Err(SponsorRelayerError::CloseAuthorityNotSet.into());
                 }
+            }
+        } else if instr.program_id == associated_token::ID {
+            // more work
+            if instr.data.len() == 0 || instr.data[0] == ATA_CREATE_DISCRIMINATOR || instr.data[0] == ATA_CREATE_IDEMPOTENT_DISCRIMINATOR {
+                init_accounts.push(instr.accounts[1].pubkey);
+                //mint at idx 3
             }
         } else {
             return Err(SponsorRelayerError::InvalidProgram.into());
@@ -88,7 +101,7 @@ pub fn relay(ctx: Context<Relay>) -> Result<()> {
         return Err(SponsorRelayerError::MaxPriorityFeeExceeded.into());
     }
 
-    let price = price / 1_000_000 + signers.len() as u64 * 5_000;
+    let price = price / 1_000_000 + signers.len() as u64 * 5_000 + rent;
 
     msg!("price: {}", price);
 

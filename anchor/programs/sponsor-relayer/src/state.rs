@@ -8,6 +8,7 @@ pub struct Sponsorship {
     pub max_priority_fee: u64,
     pub allow_permissionless_relayers: bool,
     pub bump: u8,
+    pub fund_rent: bool,
 }
 
 #[account]
