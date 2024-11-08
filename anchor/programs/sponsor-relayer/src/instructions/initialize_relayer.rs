@@ -6,7 +6,7 @@ use crate::{Relayer, Sponsorship};
 pub struct InitializeRelayer<'info> {
     #[account(mut)]
     pub authority: Signer<'info>,
-    #[account(init, payer = authority, space = 8 + Relayer::INIT_SPACE, seeds = [b"relayer", sponsorship.key().as_ref(), authority.key().as_ref()], bump)]
+    #[account(init, payer = authority, space = 8 + Relayer::INIT_SPACE, seeds = [b"relayer", relayer_wallet.key().as_ref()], bump)]
     pub relayer: Account<'info, Relayer>,
     pub sponsorship: Account<'info, Sponsorship>,
     /// CHECK: arbitrary relayer wallet

@@ -15,4 +15,10 @@ pub enum SponsorRelayerError {
     InvalidProgram,
     #[msg("Max priority fee exceeded")]
     MaxPriorityFeeExceeded,
+    #[msg("Attempted to initialize existing account")]
+    AttemptedToInitializeExistingAccount,
+    #[msg("Multiple calls in a single transaction")]
+    MultipleCalls,
+    #[msg("Invalid instruction")]
+    InvalidInstruction,
 }
