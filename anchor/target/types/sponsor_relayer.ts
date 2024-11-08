@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/sponsor_relayer.json`.
  */
 export type SponsorRelayer = {
-  "address": "ComputeBudget111111111111111111111111111111",
+  "address": "5Gdnpj8THruSLpvAmP4x9V2YThPT633BiBa9vHvGyXBz",
   "metadata": {
     "name": "sponsorRelayer",
     "version": "0.1.0",
@@ -165,11 +165,7 @@ export type SponsorRelayer = {
               },
               {
                 "kind": "account",
-                "path": "sponsorship"
-              },
-              {
-                "kind": "account",
-                "path": "authority"
+                "path": "relayerWallet"
               }
             ]
           }
@@ -297,6 +293,9 @@ export type SponsorRelayer = {
         {
           "name": "instructions",
           "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "tokenProgram"
         }
       ],
       "args": []
@@ -360,6 +359,21 @@ export type SponsorRelayer = {
       "code": 6005,
       "name": "maxPriorityFeeExceeded",
       "msg": "Max priority fee exceeded"
+    },
+    {
+      "code": 6006,
+      "name": "attemptedToInitializeExistingAccount",
+      "msg": "Attempted to initialize existing account"
+    },
+    {
+      "code": 6007,
+      "name": "multipleCalls",
+      "msg": "Multiple calls in a single transaction"
+    },
+    {
+      "code": 6008,
+      "name": "invalidInstruction",
+      "msg": "Invalid instruction"
     }
   ],
   "types": [

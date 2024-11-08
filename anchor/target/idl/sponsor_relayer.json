@@ -159,11 +159,7 @@
               },
               {
                 "kind": "account",
-                "path": "sponsorship"
-              },
-              {
-                "kind": "account",
-                "path": "authority"
+                "path": "relayer_wallet"
               }
             ]
           }
@@ -291,6 +287,9 @@
         {
           "name": "instructions",
           "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "token_program"
         }
       ],
       "args": []
@@ -354,6 +353,21 @@
       "code": 6005,
       "name": "MaxPriorityFeeExceeded",
       "msg": "Max priority fee exceeded"
+    },
+    {
+      "code": 6006,
+      "name": "AttemptedToInitializeExistingAccount",
+      "msg": "Attempted to initialize existing account"
+    },
+    {
+      "code": 6007,
+      "name": "MultipleCalls",
+      "msg": "Multiple calls in a single transaction"
+    },
+    {
+      "code": 6008,
+      "name": "InvalidInstruction",
+      "msg": "Invalid instruction"
     }
   ],
   "types": [

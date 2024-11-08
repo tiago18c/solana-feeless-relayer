@@ -18,7 +18,7 @@ pub mod sponsor_relayer {
         instructions::initialize_sponsorship::handler(ctx, max_priority_fee, allow_permissionless_relayers, mint, sponsor_amount, fund_rent)
     }
 
-    pub fn relay(ctx: Context<Relay>) -> Result<()> {
+    pub fn relay<'a, 'b, 'c, 'info>(ctx: Context<'a, 'b, 'c, 'info, Relay<'info>>) -> Result<()> {
         instructions::relay::handler(ctx)
     }
 
