@@ -28,6 +28,11 @@ pub mod compute_budget {
     declare_id!("ComputeBudget111111111111111111111111111111");
 }
 
+pub mod memo {
+    use anchor_lang::declare_id;
+    declare_id!("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr");
+}
+
 #[derive(Accounts)]
 pub struct Relay<'info> {
     #[account(mut)]
@@ -132,7 +137,7 @@ pub fn handler<'a, 'b, 'c, 'info>(ctx: Context<'a, 'b, 'c, 'info, Relay<'info>>)
                 }
             }
         } else if instr.program_id == associated_token::ID {
-            // more work
+            // allow ata creation
             if instr.data.len() == 0 || instr.data[0] == ATA_CREATE_DISCRIMINATOR /*|| instr.data[0] == ATA_CREATE_IDEMPOTENT_DISCRIMINATOR */{ // we don't want idempotent because it creates a possible exploit
                 init_accounts.push(instr.accounts[1].pubkey);
                 
@@ -145,7 +150,8 @@ pub fn handler<'a, 'b, 'c, 'info>(ctx: Context<'a, 'b, 'c, 'info, Relay<'info>>)
             } else {
                 return Err(SponsorRelayerError::InvalidInstruction.into());
             }
-        } else {
+        } else if instr.program_id != memo::ID {
+            // if its not the memo program, we fail 
             return Err(SponsorRelayerError::InvalidProgram.into());
         }
         

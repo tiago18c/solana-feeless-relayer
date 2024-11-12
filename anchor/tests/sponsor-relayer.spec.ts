@@ -1,8 +1,9 @@
+import { v4 as uuidv4 } from 'uuid';
 import * as anchor from '@coral-xyz/anchor';
 import { Program } from '@coral-xyz/anchor';
 import { Basic } from '../target/types/basic';
 import { SponsorRelayer } from '../target/types/sponsor_relayer';
-import { Keypair, PublicKey, sendAndConfirmTransaction, SYSVAR_INSTRUCTIONS_PUBKEY, Transaction } from '@solana/web3.js';
+import { Keypair, PublicKey, sendAndConfirmTransaction, SYSVAR_INSTRUCTIONS_PUBKEY, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { Provider } from 'jotai';
 import { AuthorityType, createAccount, createAssociatedTokenAccount, createAssociatedTokenAccountInstruction, createInitializeAccount3Instruction, createMint, createSetAuthorityInstruction, createTransferCheckedInstruction, createWithdrawWithheldTokensFromAccountsInstruction, getAssociatedTokenAddress, mintTo, TOKEN_PROGRAM_ID, transferChecked } from '@solana/spl-token';
 import { getRelayerAccountPda, getSponsorshipAccountPda, InitializeRelayerArgs, InitializeSponsorshipArgs, InitializeTokenAccountArgs, SponsorRelayerClient, TransferRelayArgs } from '../src/sponsor-relayer-exports';
@@ -106,9 +107,16 @@ describe('sponsor-relayer', () => {
       amount: 1000000,
       decimals: 6,
     };
+    
+    const memoId = uuidv4();
+    const ix_memo = new TransactionInstruction({
+      keys: [],
+      data: Buffer.from(memoId, "utf-8"),
+      programId: new PublicKey("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
+    });
 
     let ix3 = await client.transferRelay(relayTransferArgs);
-    let tx3 = new Transaction().add(...ix3);
+    let tx3 = new Transaction().add(ix_memo, ...ix3);
     tx3.feePayer = relayerWallet.publicKey;
     await sendAndConfirmTransaction(client.provider.connection, tx3, [relayerWallet, user], {skipPreflight: true});
   });
