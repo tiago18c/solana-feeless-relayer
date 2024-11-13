@@ -43,19 +43,19 @@ describe('sponsor-relayer', () => {
 
     await Promise.all(txs.map(tx => provider.connection.confirmTransaction(tx, "confirmed")));
     // create mint
-    await createMint(provider.connection, sponsor, sponsor.publicKey, null, 6, mint);
-    await createMint(provider.connection, sponsor, sponsor.publicKey, null, 6, mint2);
+    await createMint(provider.connection, sponsor, sponsor.publicKey, null, 6, mint, {commitment: "processed"});
+    await createMint(provider.connection, sponsor, sponsor.publicKey, null, 6, mint2, {commitment: "processed"});
 
     // create token accounts
-    userTokenAccount = await createAssociatedTokenAccount(provider.connection, sponsor, mint.publicKey, user.publicKey);
-    user2TokenAccount = await createAssociatedTokenAccount(provider.connection, sponsor, mint.publicKey, user2.publicKey);
-    userTokenAccount2 = await createAssociatedTokenAccount(provider.connection, sponsor, mint2.publicKey, user.publicKey);
-    user2TokenAccount2 = await createAssociatedTokenAccount(provider.connection, sponsor, mint2.publicKey, user2.publicKey);
+    userTokenAccount = await createAssociatedTokenAccount(provider.connection, sponsor, mint.publicKey, user.publicKey, {commitment: "processed"});
+    user2TokenAccount = await createAssociatedTokenAccount(provider.connection, sponsor, mint.publicKey, user2.publicKey, {commitment: "processed"} );
+    userTokenAccount2 = await createAssociatedTokenAccount(provider.connection, sponsor, mint2.publicKey, user.publicKey, {commitment: "processed"});
+    user2TokenAccount2 = await createAssociatedTokenAccount(provider.connection, sponsor, mint2.publicKey, user2.publicKey, {commitment: "processed"});
 
     // mint tokens
-    await mintTo(provider.connection, sponsor, mint.publicKey, userTokenAccount, sponsor, 10000000);
-    await mintTo(provider.connection, sponsor, mint2.publicKey, userTokenAccount2, sponsor, 10000000);
-    await mintTo(provider.connection, sponsor, mint.publicKey, user2TokenAccount, sponsor, 10000000);
+    await mintTo(provider.connection, sponsor, mint.publicKey, userTokenAccount, sponsor, 10000000, undefined, {commitment: "processed"} );
+    await mintTo(provider.connection, sponsor, mint2.publicKey, userTokenAccount2, sponsor, 10000000, undefined, {commitment: "processed"});
+    await mintTo(provider.connection, sponsor, mint.publicKey, user2TokenAccount, sponsor, 10000000, undefined, {commitment: "processed"});
 
     client = new SponsorRelayerClient({connection: provider.connection, confirmationOptions: {skipPreflight: true}, rpcUrl: provider.connection.rpcEndpoint}, new anchor.Wallet(relayerWallet));
     
@@ -76,7 +76,7 @@ describe('sponsor-relayer', () => {
 
     let ix = await client.initializeSponsorship(initSponsor);
 
-    await sendAndConfirmTransaction(client.provider.connection, new Transaction().add(ix), [sponsor], {skipPreflight: true});
+    await sendAndConfirmTransaction(client.provider.connection, new Transaction().add(ix), [sponsor], {skipPreflight: true, commitment: "processed"});
   });
 
   it('should setup relayer', async () => {
@@ -90,7 +90,7 @@ describe('sponsor-relayer', () => {
     }
 
     let ix2 = await client.initializeRelayer(initRelayer);
-    await sendAndConfirmTransaction(client.provider.connection, new Transaction().add(ix2), [relayer], {skipPreflight: true});
+    await sendAndConfirmTransaction(client.provider.connection, new Transaction().add(ix2), [relayer], {skipPreflight: true, commitment: "processed"});
 
   });
     

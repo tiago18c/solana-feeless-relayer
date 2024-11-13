@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/sponsor_relayer.json`.
  */
 export type SponsorRelayer = {
-  "address": "MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr",
+  "address": "5Gdnpj8THruSLpvAmP4x9V2YThPT633BiBa9vHvGyXBz",
   "metadata": {
     "name": "sponsorRelayer",
     "version": "0.1.0",
